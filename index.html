@@ -12,6 +12,7 @@
         html {
             min-height: calc(100% + env(safe-area-inset-top));
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            overflow: hidden; /* Prevent scrolling */
         }
 
         body, html {
@@ -28,8 +29,19 @@
             width: 100vw;
             height: 100vh;
             object-fit: cover;
+            pointer-events: none; /* Prevent long press to save image */
+            -webkit-user-drag: none; /* Prevent image dragging */
         }
     </style>
+    <script>
+        document.addEventListener('touchmove', function(event) {
+            event.preventDefault(); /* Prevent scrolling */
+        }, { passive: false });
+
+        document.addEventListener('contextmenu', function(event) {
+            event.preventDefault(); /* Prevent context menu */
+        });
+    </script>
 </head>
 <body>
     <img src="image.png" alt="My Image">
