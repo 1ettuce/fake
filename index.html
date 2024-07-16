@@ -19,7 +19,7 @@
 
         .image-container {
             width: 100vw;
-            height: 100vh;
+            height: calc(100vh - env(safe-area-inset-bottom)); /* 안전 영역을 고려 */
             overflow: hidden; /* 이미지 영역 스크롤 방지 */
         }
 
