@@ -40,6 +40,24 @@
         body {
             -webkit-touch-callout: none; /* Prevent iOS long press */
         }
+
+        /* 버튼 스타일 */
+        .change-image-button {
+            position: absolute;
+            bottom: 20px; /* 아래에서 20px */
+            right: 20px; /* 오른쪽에서 20px */
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            z-index: 10; /* 이미지 위에 나타나도록 */
+        }
+
+        /* 버튼 숨기기 */
+        /* .change-image-button {
+            display: none; 
+        } */
     </style>
     <script>
         // Prevent scrolling
@@ -61,9 +79,16 @@
             }
             lastTouchEnd = now;
         }, false);
+
+        // 이미지 변경 함수
+        function changeImage() {
+            const imgElement = document.getElementById('mainImage');
+            imgElement.src = imgElement.src === 'image.png' ? 'new-image.png' : 'image.png'; // 이미지 전환
+        }
     </script>
 </head>
 <body>
-    <img src="image.png" alt="My Image">
+    <img id="mainImage" src="image.png" alt="My Image">
+    <button class="change-image-button" onclick="changeImage()">이미지 변경</button>
 </body>
 </html>
