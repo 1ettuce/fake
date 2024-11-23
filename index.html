@@ -90,14 +90,14 @@
             lastTouchEnd = now;
         }, false);
 
-        function changeImage() {
-            currentImage = (currentImage + 1) % images.length;
+        function changeImage(arg) {
+            currentImage = arg;
             document.getElementById('main-image').src = images[currentImage];
         }
     </script>
 </head>
 <body>
     <img id="main-image" src="image.png" alt="My Image">
-    <div class="change-image-button" onclick="changeImage()">⬅️</div> <!-- 버튼에 아이콘 추가 -->
+    <div class="change-image-button" onclick="changeImage(0)">⬅️</div> <!-- 버튼에 아이콘 추가 -->
 </body>
 </html>
