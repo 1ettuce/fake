@@ -83,7 +83,14 @@
         // 이미지 변경 함수
         function changeImage() {
             const imgElement = document.getElementById('mainImage');
-            imgElement.src = imgElement.src === 'image.png' ? 'new-image.png' : 'image.png'; // 이미지 전환
+            console.log('Current image source:', imgElement.src); // 현재 이미지 경로 출력
+            if (imgElement.src.includes('image.png')) {
+                imgElement.src = 'new-image.png';
+                console.log('Image changed to new-image.png');
+            } else {
+                imgElement.src = 'image.png';
+                console.log('Image changed to image.png');
+            }
         }
     </script>
 </head>
