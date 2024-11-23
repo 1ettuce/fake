@@ -67,6 +67,7 @@
     </style>
     <script>
         let currentImage = 0;
+        let firstTime = true;
         const images = ['image.png', 'image2.png', 'image3.png'];
 
         // Prevent scrolling
@@ -90,12 +91,13 @@
         }, false);
 
         function changeImage(arg) {
-        if (arg === 1 && currentImage === 0) {
+        if (arg === 1 && currentImage === 0 && firstTime) {
             // 오른쪽 버튼 클릭 시
             document.getElementById('main-image').src = images[2]; // 이미지3으로 변경
             setTimeout(() => {
                 document.getElementById('main-image').src = images[1]; // 이미지1로 변경
-            }, 300); // 0.3초 후
+            }, 100); // 0.3초 후
+            firstTime = false;
         } else {
             currentImage = arg;
             document.getElementById('main-image').src = images[currentImage];
