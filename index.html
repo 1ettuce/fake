@@ -51,10 +51,13 @@
             height: 50px; /* 버튼의 높이 */
             background-color: rgba(255, 255, 255, 0.8);
             border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
+            border-radius: 5px; /* 모서리를 둥글게 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             z-index: 10; /* Ensure button is on top */
+            touch-action: manipulation; /* Enable touch interactions */
         }
 
         .change-image-button:hover {
@@ -93,6 +96,6 @@
 </head>
 <body>
     <img id="main-image" src="image.png" alt="My Image">
-    <div class="change-image-button" onclick="changeImage()">이미지 변경</div>
+    <div class="change-image-button" onclick="changeImage()">⬅️</div> <!-- 버튼에 아이콘 추가 -->
 </body>
 </html>
