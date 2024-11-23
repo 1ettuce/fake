@@ -49,10 +49,8 @@
             right: 5px;
             width: 70px; /* 버튼의 너비 */
             height: 70px; /* 버튼의 높이 */
-            background-color: rgba(255, 255, 255, 0.8);
-            opacity: 0;
-            border: 1px solid #ccc;
-            border-radius: 5px; /* 모서리를 둥글게 */
+            background-color: transparent; /* 완전히 투명하게 */
+            border: none; /* 테두리 제거 */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -61,13 +59,9 @@
             touch-action: manipulation; /* Enable touch interactions */
         }
 
-        .change-image-button:hover {
-            background-color: transparent;
-        }
-
+        .change-image-button:hover,
         .change-image-button:active {
-            background-color: transparent;
-            opacity: 0;
+            background-color: transparent; /* 호버나 클릭 시에도 투명하게 유지 */
         }
     </style>
     <script>
