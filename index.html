@@ -69,7 +69,7 @@
     <script>
         let currentImage = 0;
         let firstTime = true;
-        const images = ['image.png', 'image2.png', 'image3.png'];
+        const images = ['image.png', 'image2.png', 'image3.png', 'image4.png', 'image5.png'];
 
         // Prevent scrolling
         document.addEventListener('touchmove', function(event) {
@@ -92,18 +92,27 @@
         }, false);
 
         function changeImage(arg) {
-        if (arg === 1 && currentImage === 0 && firstTime) {
-            // 오른쪽 버튼 클릭 시
-            document.getElementById('main-image').src = images[2]; // 이미지3으로 변경
-            setTimeout(() => {
-                document.getElementById('main-image').src = images[1]; // 이미지1로 변경
-            }, 100); // 0.3초 후
-            firstTime = false;
-        } else {
-            currentImage = arg;
-            document.getElementById('main-image').src = images[currentImage];
+            if (arg === 1 && currentImage === 0 && firstTime) {
+                // 오른쪽 버튼 클릭 시
+                document.getElementById('main-image').src = images[2]; // 이미지3으로 변경
+                setTimeout(() => {
+                    document.getElementById('main-image').src = images[1]; // 이미지1로 변경
+                }, 100); // 0.3초 후
+                firstTime = false;
+            } else {
+                currentImage = arg;
+                document.getElementById('main-image').src = images[currentImage];
+            }
         }
-    }
+
+        window.onload = function() {
+            // 처음 로드시 이미지 4 보여주기
+            document.getElementById('main-image').src = images[3]; // 이미지 4
+            setTimeout(() => {
+                // 1초 후 이미지 5로 오버랩 전환
+                document.getElementById('main-image').src = images[4]; // 이미지 5
+            }, 1000); // 1초 후
+        };
     </script>
 </head>
 <body>
