@@ -36,6 +36,7 @@
             object-fit: cover;
             pointer-events: none; /* Prevent long press to save image */
             -webkit-user-drag: none; /* Prevent image dragging */
+            transition: opacity 1s ease; /* 디졸브 효과 추가 */
         }
 
         body {
@@ -107,10 +108,25 @@
 
         window.onload = function() {
             // 처음 로드시 이미지 4 보여주기
-            document.getElementById('main-image').src = images[3]; // 이미지 4
+            const imgElement = document.getElementById('main-image');
+            imgElement.src = images[3]; // 이미지 4
+            imgElement.style.opacity = 1; // 보이도록 설정
+
             setTimeout(() => {
-                // 1초 후 이미지 5로 오버랩 전환
-                document.getElementById('main-image').src = images[4]; // 이미지 5
+                // 1초 후 이미지 5로 전환
+                imgElement.style.opacity = 0; // 페이드 아웃
+                setTimeout(() => {
+                    imgElement.src = images[4]; // 이미지 5
+                    imgElement.style.opacity = 1; // 페이드 인
+                }, 1000); // 1초 후
+
+                setTimeout(() => {
+                    // 이미지 5를 1초 후에 원래 이미지 0으로 돌아가기
+                    setTimeout(() => {
+                        imgElement.src = images[0]; // 원래 이미지 0
+                        imgElement.style.opacity = 1; // 바로 보이도록 설정
+                    }, 0); // 즉시 변경
+                }, 2000); // 2초 후 (이미지 5가 보여진 후 1초)
             }, 1000); // 1초 후
         };
     </script>
