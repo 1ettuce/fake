@@ -27,6 +27,12 @@
             position: relative; /* Added to position button */
         }
 
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
         img {
             display: block;
             max-width: 100%;
@@ -37,6 +43,13 @@
             pointer-events: none; /* Prevent long press to save image */
             -webkit-user-drag: none; /* Prevent image dragging */
             transition: opacity 1s ease; /* 디졸브 효과 추가 */
+        }
+
+        .fade {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0; /* 초기 opacity 설정 */
         }
 
         body {
@@ -68,7 +81,7 @@
         }
     </style>
     <script>
-        let currentImage = 4;
+        let currentImage = 3;
         let firstTime = true;
         const images = ['image.png', 'image2.png', 'image3.png', 'image4.png', 'image5.png'];
 
@@ -107,24 +120,25 @@
         }
 
         window.onload = function() {
-            // 처음 로드시 이미지 4 보여주기
-            const imgElement = document.getElementById('main-image');
-            imgElement.src = images[3]; // 이미지 4
-            imgElement.style.opacity = 1; // 보이도록 설정
+            const imgElement4 = document.getElementById('image4');
+            const imgElement5 = document.getElementById('image5');
+
+            imgElement4.src = images[3]; // 이미지 4
+            imgElement5.src = images[4]; // 이미지 5
+
+            imgElement4.style.opacity = 1; // 이미지 4 보이게 설정
 
             setTimeout(() => {
                 // 1초 후 이미지 5로 전환
-                imgElement.style.opacity = 0; // 페이드 아웃
-                setTimeout(() => {
-                    imgElement.src = images[4]; // 이미지 5
-                    imgElement.style.opacity = 1; // 페이드 인
-                }, 1000); // 1초 후
+                imgElement4.style.opacity = 0; // 이미지 4 페이드 아웃
+                imgElement5.style.opacity = 1; // 이미지 5 보이게 설정
 
                 setTimeout(() => {
                     // 이미지 5를 1초 후에 원래 이미지 0으로 돌아가기
+                    imgElement5.style.opacity = 0; // 이미지 5 페이드 아웃
                     setTimeout(() => {
-                        imgElement.src = images[0]; // 원래 이미지 0
-                        imgElement.style.opacity = 1; // 바로 보이도록 설정
+                        document.getElementById('main-image').src = images[0]; // 원래 이미지 0
+                        imgElement5.style.opacity = 1; // 바로 보이도록 설정
                     }, 0); // 즉시 변경
                 }, 2000); // 2초 후 (이미지 5가 보여진 후 1초)
             }, 1000); // 1초 후
@@ -132,7 +146,11 @@
     </script>
 </head>
 <body>
-    <img id="main-image" src="image.png" alt="My Image">
+    <div class="image-container">
+        <img id="image4" class="fade" alt="Image 4">
+        <img id="image5" class="fade" alt="Image 5">
+        <img id="main-image" src="image.png" alt="My Image">
+    </div>
     <div class="change-image-button" onclick="changeImage(1)">⬅️</div> <!-- 버튼에 아이콘 추가 -->
     <div class="change-image-button" style="left: 5px;" onclick="changeImage(0)">➡️</div> <!-- 왼쪽 버튼 -->
 </body>
