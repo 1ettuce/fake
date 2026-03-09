@@ -69,12 +69,14 @@
             z-index: 5;
         }
 
-        #main-image {
+        /* 크로스페이드용 두 레이어 */
+        #main-image-a,
+        #main-image-b {
             position: absolute;
             top: 0;
             left: 0;
-            z-index: 1;
-            transition: opacity 0.1s ease;
+            z-index: 2;
+            transition: opacity 0.3s ease;
         }
 
         body {
@@ -116,7 +118,7 @@
     </style>
     <script>
         let currentImage = 0;
-        // 버튼용 이미지 배열 (인트로 image4, image5와 분리)
+        let activeLayer = 'a'; // 현재 보이는 레이어
         const images = ['image.png', 'imageA.png', 'imageB.png', 'imageC.png', 'imageD.png'];
 
         document.addEventListener('touchmove', function(event) {
@@ -139,27 +141,41 @@
         function changeImage(arg) {
             if (currentImage === arg) return;
             currentImage = arg;
-            const mainImage = document.getElementById('main-image');
-            mainImage.style.opacity = 0;
-            setTimeout(() => {
-                mainImage.src = images[currentImage];
-                mainImage.style.opacity = 1;
-            }, 100);
+
+            const layerA = document.getElementById('main-image-a');
+            const layerB = document.getElementById('main-image-b');
+
+            if (activeLayer === 'a') {
+                // B에 새 이미지 로드 후 페이드인, A 페이드아웃
+                layerB.src = images[currentImage];
+                layerB.style.opacity = 1;
+                layerA.style.opacity = 0;
+                activeLayer = 'b';
+            } else {
+                // A에 새 이미지 로드 후 페이드인, B 페이드아웃
+                layerA.src = images[currentImage];
+                layerA.style.opacity = 1;
+                layerB.style.opacity = 0;
+                activeLayer = 'a';
+            }
         }
 
         window.onload = function() {
-            const mainImage = document.getElementById('main-image');
+            const layerA = document.getElementById('main-image-a');
+            const layerB = document.getElementById('main-image-b');
             const imgElement4 = document.getElementById('image4');
             const imgElement5 = document.getElementById('image5');
             const transitionVideo = document.getElementById('transition-video');
 
-            // 인트로 애니메이션용 image4, image5는 그대로 유지
             imgElement4.src = 'image4.png';
             imgElement5.src = 'image5.png';
-            mainImage.src = images[0];
 
-            mainImage.style.transition = 'none';
-            mainImage.style.opacity = 0;
+            // 초기 이미지 A레이어에 세팅, 둘 다 숨김 상태로 시작
+            layerA.src = images[0];
+            layerA.style.transition = 'none';
+            layerA.style.opacity = 0;
+            layerB.style.opacity = 0;
+            activeLayer = 'a';
 
             transitionVideo.addEventListener('ended', () => {
                 transitionVideo.style.opacity = 0;
@@ -176,10 +192,15 @@
 
                     transitionVideo.addEventListener('playing', () => {
                         setTimeout(() => {
-                            mainImage.style.transition = 'none';
-                            mainImage.style.opacity = 1;
+                            layerA.style.transition = 'none';
+                            layerA.style.opacity = 1;
                             imgElement5.style.transition = 'none';
                             imgElement5.style.opacity = 0;
+
+                            // 인트로 끝난 후 버튼 전환에 transition 복원
+                            setTimeout(() => {
+                                layerA.style.transition = 'opacity 0.3s ease';
+                            }, 50);
                         }, 520);
                     }, { once: true });
 
@@ -187,7 +208,10 @@
                         imgElement5.style.transition = 'none';
                         imgElement5.style.opacity = 0;
                         transitionVideo.style.opacity = 0;
-                        mainImage.style.opacity = 1;
+                        layerA.style.opacity = 1;
+                        setTimeout(() => {
+                            layerA.style.transition = 'opacity 0.3s ease';
+                        }, 50);
                     });
                 }, 2000);
             }, 1000);
@@ -204,7 +228,9 @@
             <source src="transition.webm" type="video/webm">
         </video>
 
-        <img id="main-image" src="image.png" alt="Main Image">
+        <!-- 크로스페이드용 두 레이어 (B가 위, A가 아래) -->
+        <img id="main-image-a" src="image.png" alt="Main Image A">
+        <img id="main-image-b" src="" alt="Main Image B" style="opacity:0;">
     </div>
 
     <div class="button-bar">
