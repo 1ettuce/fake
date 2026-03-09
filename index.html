@@ -74,16 +74,25 @@
             top: 0;
             left: 0;
             z-index: 1;
+            transition: opacity 0.1s ease;
         }
 
         body {
             -webkit-touch-callout: none;
         }
 
-        .change-image-button {
+        .button-bar {
             position: absolute;
             bottom: 20px;
-            right: 5px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .change-image-button {
             width: 70px;
             height: 70px;
             background-color: rgba(255, 255, 255, 0.8);
@@ -94,9 +103,11 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 10;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
         }
 
         .change-image-button:hover {
@@ -105,7 +116,7 @@
     </style>
     <script>
         let currentImage = 0;
-        const images = ['image.png', 'image2.png', 'image3.png', 'image4.png', 'image5.png'];
+        const images = ['image.png', 'imageA.png', 'imageB.png', 'imageC.png', 'imageD.png'];
 
         document.addEventListener('touchmove', function(event) {
             event.preventDefault();
@@ -125,8 +136,14 @@
         }, false);
 
         function changeImage(arg) {
+            if (currentImage === arg) return;
             currentImage = arg;
-            document.getElementById('main-image').src = images[currentImage];
+            const mainImage = document.getElementById('main-image');
+            mainImage.style.opacity = 0;
+            setTimeout(() => {
+                mainImage.src = images[currentImage];
+                mainImage.style.opacity = 1;
+            }, 100);
         }
 
         window.onload = function() {
@@ -142,28 +159,22 @@
             mainImage.style.transition = 'none';
             mainImage.style.opacity = 0;
 
-            // 영상 종료 시 영상만 숨김 (main-image는 이미 0.3초 뒤에 표시됨)
             transitionVideo.addEventListener('ended', () => {
                 transitionVideo.style.opacity = 0;
             });
 
-            // Step 1: image4 페이드인
             imgElement4.style.opacity = 1;
 
             setTimeout(() => {
-                // Step 2: image4 → image5 전환
                 imgElement4.style.opacity = 0;
                 imgElement5.style.opacity = 1;
 
                 setTimeout(() => {
-                    // Step 3: 영상 올리고 재생
                     transitionVideo.style.opacity = 1;
 
                     transitionVideo.addEventListener('playing', () => {
-                        // image5는 그대로 유지 (영상 뒤 빈 공간에서 보임)
-                        // 0.3초 후 main-image로 교체 (영상 뒤에서 자연스럽게)
                         setTimeout(() => {
-                            mainImage.style.transition = 'none';
+                            mainImage.style.transition = 'opacity 0.1s ease';
                             mainImage.style.opacity = 1;
                             imgElement5.style.transition = 'none';
                             imgElement5.style.opacity = 0;
@@ -171,7 +182,6 @@
                     }, { once: true });
 
                     transitionVideo.play().catch(() => {
-                        // 재생 실패 fallback
                         imgElement5.style.transition = 'none';
                         imgElement5.style.opacity = 0;
                         transitionVideo.style.opacity = 0;
@@ -194,13 +204,13 @@
 
         <img id="main-image" src="image.png" alt="Main Image">
     </div>
-    <div class="change-image-button" onclick="changeImage(1)">⬅️</div>
-    <div class="change-image-button" style="left: 5px;" onclick="changeImage(0)">➡️</div>
+
+    <div class="button-bar">
+        <div class="change-image-button" onclick="changeImage(0)">image</div>
+        <div class="change-image-button" onclick="changeImage(1)">A</div>
+        <div class="change-image-button" onclick="changeImage(2)">B</div>
+        <div class="change-image-button" onclick="changeImage(3)">C</div>
+        <div class="change-image-button" onclick="changeImage(4)">D</div>
+    </div>
 </body>
 </html>
-
-
-
-
-
-
