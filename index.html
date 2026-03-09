@@ -1,9 +1,9 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Binance</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes, viewport-fit=cover" />
+    <title>Binance</title>
     <meta name="apple-mobile-web-app-title" content="Binance" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,8 +12,8 @@
         html {
             min-height: calc(100% + env(safe-area-inset-top));
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-            overflow: hidden; /* Prevent scrolling */
-            -webkit-user-select: none; /* Prevent text selection */
+            overflow: hidden;
+            -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
@@ -24,7 +24,7 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            position: relative; /* Added to position button */
+            position: relative;
         }
 
         .image-container {
@@ -35,44 +35,41 @@
 
         img {
             display: block;
-            max-width: 100%;
-            height: auto;
             width: 100vw;
             height: 100vh;
             object-fit: cover;
-            pointer-events: none; /* Prevent long press to save image */
-            -webkit-user-drag: none; /* Prevent image dragging */
-            transition: opacity 1s ease; /* 디졸브 효과 추가 */
+            pointer-events: none;
+            -webkit-user-drag: none;
+            transition: opacity 1s ease;
         }
 
         .fade {
             position: absolute;
             top: 0;
             left: 0;
-            opacity: 0; /* 초기 opacity 설정 */
+            opacity: 0;
         }
 
         body {
-            -webkit-touch-callout: none; /* Prevent iOS long press */
+            -webkit-touch-callout: none;
         }
 
-        /* Button styles */
         .change-image-button {
             position: absolute;
             bottom: 20px;
             right: 5px;
-            width: 70px; /* 버튼의 너비 */
-            height: 70px; /* 버튼의 높이 */
+            width: 70px;
+            height: 70px;
             background-color: rgba(255, 255, 255, 0.8);
             opacity: 0;
             border: 1px solid #ccc;
-            border-radius: 5px; /* 모서리를 둥글게 */
+            border-radius: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 10; /* Ensure button is on top */
-            touch-action: manipulation; /* Enable touch interactions */
+            z-index: 10;
+            touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -81,21 +78,21 @@
         }
     </style>
     <script>
-        let currentImage = 3;
+        let currentImage = 0;
         let firstTime = true;
         const images = ['image.png', 'image2.png', 'image3.png', 'image4.png', 'image5.png'];
 
-        // Prevent scrolling
+        // 스크롤 방지
         document.addEventListener('touchmove', function(event) {
             event.preventDefault();
         }, { passive: false });
 
-        // Prevent context menu
+        // 컨텍스트 메뉴 방지
         document.addEventListener('contextmenu', function(event) {
             event.preventDefault();
         });
 
-        // Prevent double-tap zoom
+        // 더블탭 줌 방지
         let lastTouchEnd = 0;
         document.addEventListener('touchend', function(event) {
             const now = new Date().getTime();
@@ -106,42 +103,37 @@
         }, false);
 
         function changeImage(arg) {
-            if (arg === 1 && currentImage === 0 && firstTime) {
-                // 오른쪽 버튼 클릭 시
-                document.getElementById('main-image').src = images[2]; // 이미지3으로 변경
-                setTimeout(() => {
-                    document.getElementById('main-image').src = images[1]; // 이미지1로 변경
-                }, 100); // 0.3초 후
-                firstTime = false;
-            } else {
-                currentImage = arg;
-                document.getElementById('main-image').src = images[currentImage];
-            }
+            currentImage = arg;
+            document.getElementById('main-image').src = images[currentImage];
         }
 
         window.onload = function() {
+            const mainImage = document.getElementById('main-image');
             const imgElement4 = document.getElementById('image4');
             const imgElement5 = document.getElementById('image5');
 
-            imgElement4.src = images[3]; // 이미지 4
-            imgElement5.src = images[4]; // 이미지 5
+            // 이미지 src 설정
+            imgElement4.src = images[3];
+            imgElement5.src = images[4];
+            mainImage.src = images[0];
 
-            imgElement4.style.opacity = 1; // 이미지 4 보이게 설정
+            // 처음엔 main-image 숨기기
+            mainImage.style.opacity = 0;
+
+            // Step 1: image4 페이드인
+            imgElement4.style.opacity = 1;
 
             setTimeout(() => {
-                // 1초 후 이미지 5로 전환
-                imgElement4.style.opacity = 0; // 이미지 4 페이드 아웃
-                imgElement5.style.opacity = 1; // 이미지 5 보이게 설정
+                // Step 2: image4 → image5 전환
+                imgElement4.style.opacity = 0;
+                imgElement5.style.opacity = 1;
 
                 setTimeout(() => {
-                    // 이미지 5를 1초 후에 원래 이미지 0으로 돌아가기
-                    imgElement5.style.opacity = 0; // 이미지 5 페이드 아웃
-                    setTimeout(() => {
-                        document.getElementById('main-image').src = images[0]; // 원래 이미지 0
-                        imgElement5.style.opacity = 1; // 바로 보이도록 설정
-                    }, 0); // 즉시 변경
-                }, 2000); // 2초 후 (이미지 5가 보여진 후 1초)
-            }, 1000); // 1초 후
+                    // Step 3: image5 → main-image(image0) 전환
+                    imgElement5.style.opacity = 0;
+                    mainImage.style.opacity = 1;
+                }, 2000);
+            }, 1500);
         };
     </script>
 </head>
@@ -149,9 +141,9 @@
     <div class="image-container">
         <img id="image4" class="fade" alt="Image 4">
         <img id="image5" class="fade" alt="Image 5">
-        <img id="main-image" src="image.png" alt="My Image">
+        <img id="main-image" src="image.png" alt="Main Image">
     </div>
-    <div class="change-image-button" onclick="changeImage(1)">⬅️</div> <!-- 버튼에 아이콘 추가 -->
-    <div class="change-image-button" style="left: 5px;" onclick="changeImage(0)">➡️</div> <!-- 왼쪽 버튼 -->
+    <div class="change-image-button" onclick="changeImage(1)">⬅️</div>
+    <div class="change-image-button" style="left: 5px;" onclick="changeImage(0)">➡️</div>
 </body>
 </html>
