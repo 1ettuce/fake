@@ -57,7 +57,7 @@
             top: 0;
             left: 0;
             width: 100vw;
-            height: calc(100vw * 500 / 1180); /* 1180x500 비율 유지 */
+            height: calc(100vw * 500 / 1180);
             object-fit: fill;
             pointer-events: none;
             opacity: 0;
@@ -96,17 +96,14 @@
         let currentImage = 0;
         const images = ['image.png', 'image2.png', 'image3.png', 'image4.png', 'image5.png'];
 
-        // 스크롤 방지
         document.addEventListener('touchmove', function(event) {
             event.preventDefault();
         }, { passive: false });
 
-        // 컨텍스트 메뉴 방지
         document.addEventListener('contextmenu', function(event) {
             event.preventDefault();
         });
 
-        // 더블탭 줌 방지
         let lastTouchEnd = 0;
         document.addEventListener('touchend', function(event) {
             const now = new Date().getTime();
@@ -132,48 +129,65 @@
             imgElement5.src = images[4];
             mainImage.src = images[0];
 
-            // main-image는 처음부터 보이게 유지
-            mainImage.style.opacity = 1;
+            // 시작: image5 바로 보이게, main-image는 숨김
+            imgElement5.style.transition = 'none';
+            imgElement5.style.opacity = 1;
+            mainImage.style.transition = 'none';
+            mainImage.style.opacity = 0;
 
-            // 영상 종료 시 → 영상만 숨김 (main-image는 이미 보이고 있음)
+            // 영상 종료 시 → main-image 페이드인
             transitionVideo.addEventListener('ended', () => {
                 transitionVideo.style.opacity = 0;
+                mainImage.style.transition = 'opacity 0.6s ease';
+                mainImage.style.opacity = 1;
             });
 
-            // Step 1: image4 페이드인
-            imgElement4.style.opacity = 1;
-
+            // Step 1: image5 → image4 전환
             setTimeout(() => {
-                // Step 2: image4 → image5 전환
-                imgElement4.style.opacity = 0;
-                imgElement5.style.opacity = 1;
+                imgElement5.style.transition = 'opacity 0.6s ease';
+                imgElement5.style.opacity = 0;
+                imgElement4.style.opacity = 1;
 
                 setTimeout(() => {
-                    // Step 3: 영상 표시
-                    transitionVideo.style.opacity = 1;
+                    // Step 2: image4 → image5 전환
+                    imgElement4.style.opacity = 0;
+                    imgElement5.style.transition = 'opacity 0.6s ease';
+                    imgElement5.style.opacity = 1;
 
-                    transitionVideo.addEventListener('playing', () => {
-                        imgElement5.style.transition = 'none';
-                        imgElement5.style.opacity = 0;
-                    }, { once: true });
+                    setTimeout(() => {
+                        // Step 3: 영상 재생
+                        transitionVideo.style.opacity = 1;
 
-                    transitionVideo.play().catch(() => {
-                        imgElement5.style.transition = 'none';
-                        imgElement5.style.opacity = 0;
-                        transitionVideo.style.opacity = 0;
-                    });
-                }, 2000);
+                        transitionVideo.addEventListener('playing', () => {
+                            imgElement5.style.transition = 'none';
+                            imgElement5.style.opacity = 0;
+                        }, { once: true });
+
+                        transitionVideo.play().catch(() => {
+                            imgElement5.style.transition = 'none';
+                            imgElement5.style.opacity = 0;
+                            transitionVideo.style.opacity = 0;
+                            mainImage.style.transition = 'opacity 0.6s ease';
+                            mainImage.style.opacity = 1;
+                        });
+                    }, 2000);
+                }, 1000);
             }, 1000);
         };
     </script>
 </head>
 <body>
     <div class="image-container">
+        <!-- 맨 아래: main-image (처음엔 숨김) -->
         <img id="main-image" src="image.png" alt="Main Image">
-        <img id="image4" class="fade" alt="Image 4">
+
+        <!-- image5가 처음부터 보임 -->
         <img id="image5" class="fade" alt="Image 5">
 
-        <!-- 전환 영상: 상단 비율 영역만 차지 -->
+        <!-- image4는 그 위에 -->
+        <img id="image4" class="fade" alt="Image 4">
+
+        <!-- 영상은 최상단 -->
         <video id="transition-video" muted playsinline preload="auto">
             <source src="transition.mp4" type="video/mp4">
             <source src="transition.webm" type="video/webm">
