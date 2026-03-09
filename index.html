@@ -59,11 +59,6 @@
             transition: none;
         }
 
-        /* JS 실행 전 순간적으로 노출되는 것 방지 */
-        #main-image {
-            opacity: 0;
-        }
-
         body {
             -webkit-touch-callout: none;
         }
@@ -126,25 +121,23 @@
             const imgElement5 = document.getElementById('image5');
             const transitionVideo = document.getElementById('transition-video');
 
-            // image5 로딩
+            // 이미지 src 설정
+            imgElement4.src = images[3];
             imgElement5.src = images[4];
+            mainImage.src = images[0];
 
-            // image0 백그라운드에서 미리 로딩 (영상 끝날 때 즉시 표시되도록)
-            const preloadImg = new Image();
-            preloadImg.src = images[0];
-
-            // main-image는 숨김 상태 유지
+            // 처음엔 main-image 완전히 숨기기 (transition 없이)
             mainImage.style.transition = 'none';
             mainImage.style.opacity = 0;
 
-            // 영상 종료 시 → src 설정 후 main-image(image0) 표시
+            // 영상 종료 시 → main-image(image0) 즉시 표시
             transitionVideo.addEventListener('ended', () => {
-                mainImage.src = images[0]; // 여기서 처음 로딩
                 transitionVideo.style.opacity = 0;
                 mainImage.style.opacity = 1;
             });
 
-            // image4는 HTML에서 이미 표시 중 → 바로 타이머 시작
+            // Step 1: image4 페이드인
+            imgElement4.style.opacity = 1;
 
             setTimeout(() => {
                 // Step 2: image4 → image5 전환
@@ -169,14 +162,14 @@
                         transitionVideo.style.opacity = 0;
                         mainImage.style.opacity = 1;
                     });
-                }, 2000);
+                }, 500);
             }, 1000);
         };
     </script>
 </head>
 <body>
     <div class="image-container">
-        <img id="image4" class="fade" src="image4.png" alt="Image 4" style="opacity:1;">
+        <img id="image4" class="fade" alt="Image 4">
         <img id="image5" class="fade" alt="Image 5">
 
         <!-- 전환 영상: image5 마지막 프레임 → image0 첫 프레임 -->
@@ -185,9 +178,10 @@
             <source src="transition.webm" type="video/webm">
         </video>
 
-        <img id="main-image" alt="Main Image">
+        <img id="main-image" src="image.png" alt="Main Image">
     </div>
     <div class="change-image-button" onclick="changeImage(1)">⬅️</div>
     <div class="change-image-button" style="left: 5px;" onclick="changeImage(0)">➡️</div>
 </body>
 </html>
+
