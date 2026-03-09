@@ -25,6 +25,7 @@
             width: 100%;
             height: 100%;
             position: relative;
+            background-color: #202630;
         }
 
         .image-container {
@@ -124,37 +125,42 @@
             lastTouchEnd = now;
         }, false);
 
+        // 모든 이미지를 미리 로드해두는 캐시
+        const imageCache = {};
+
+        function preloadImages() {
+            images.forEach(src => {
+                const img = new Image();
+                img.src = src;
+                imageCache[src] = img;
+            });
+        }
+
         function changeImage(arg) {
             const mainImage = document.getElementById('main-image');
             const backImage = document.getElementById('back-image');
             currentImage = arg;
-
             const newSrc = images[currentImage];
 
-            // 새 이미지를 back에 세팅, 로드 완료 후 크로스페이드
+            // 이미 캐시된 이미지를 back에 세팅 (이미 로드 완료 상태)
             backImage.style.transition = 'none';
-            backImage.style.opacity = 0;
             backImage.src = newSrc;
+            backImage.style.opacity = 1;
 
-            backImage.onload = () => {
-                // 두 레이어 동시에 전환 (크로스페이드)
-                backImage.style.transition = 'opacity 0.15s ease';
-                mainImage.style.transition = 'opacity 0.15s ease';
-                backImage.style.opacity = 1;
-                mainImage.style.opacity = 0;
+            // main을 즉시 페이드아웃 (back은 이미 깔려 있음)
+            mainImage.style.transition = 'opacity 0.15s ease';
+            mainImage.style.opacity = 0;
 
-                setTimeout(() => {
-                    // main을 새 이미지로 교체 후 즉시 복원, back 숨김
-                    mainImage.style.transition = 'none';
-                    mainImage.src = newSrc;
-                    mainImage.style.opacity = 1;
-                    backImage.style.transition = 'none';
-                    backImage.style.opacity = 0;
-                }, 160);
-            };
+            setTimeout(() => {
+                mainImage.style.transition = 'none';
+                mainImage.src = newSrc;
+                mainImage.style.opacity = 1;
+                backImage.style.opacity = 0;
+            }, 160);
         }
 
         window.onload = function() {
+            preloadImages(); // 모든 이미지 미리 로드
             const mainImage = document.getElementById('main-image');
             const imgElement4 = document.getElementById('image4');
             const imgElement5 = document.getElementById('image5');
