@@ -125,8 +125,14 @@
         }, false);
 
         function changeImage(arg) {
+            const mainImage = document.getElementById('main-image');
             currentImage = arg;
-            document.getElementById('main-image').src = images[currentImage];
+            mainImage.style.transition = 'opacity 0.1s ease';
+            mainImage.style.opacity = 0;
+            setTimeout(() => {
+                mainImage.src = images[currentImage];
+                mainImage.style.opacity = 1;
+            }, 100);
         }
 
         window.onload = function() {
@@ -198,8 +204,3 @@
     <div class="change-image-button" style="left: 5px;" onclick="changeImage(0)">➡️</div>
 </body>
 </html>
-
-
-
-
-
