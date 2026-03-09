@@ -75,7 +75,7 @@
             top: 0;
             left: 0;
             z-index: 2;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s ease;
         }
 
         body {
@@ -121,6 +121,16 @@
         let isSwitching = false;
         const images = ['image.png', 'imageA.png', 'imageB.png', 'imageC.png', 'imageD.png'];
 
+        // 페이지 로드 시 모든 버튼용 이미지 미리 캐시
+        const preloadCache = {};
+        function preloadAll() {
+            images.forEach((src, i) => {
+                const img = new Image();
+                img.src = src;
+                preloadCache[src] = img;
+            });
+        }
+
         document.addEventListener('touchmove', function(event) {
             event.preventDefault();
         }, { passive: false });
@@ -145,33 +155,45 @@
 
             const layerA = document.getElementById('main-image-a');
             const layerB = document.getElementById('main-image-b');
-
             const nextLayer = activeLayer === 'a' ? layerB : layerA;
             const prevLayer = activeLayer === 'a' ? layerA : layerB;
 
-            // 새 이미지를 숨긴 상태로 먼저 로드
-            nextLayer.style.transition = 'none';
-            nextLayer.style.opacity = 0;
-            nextLayer.src = images[currentImage];
+            const targetSrc = images[currentImage];
+            const cached = preloadCache[targetSrc];
 
-            nextLayer.onload = function() {
-                // 완전히 로드된 후에만 크로스페이드 시작
-                nextLayer.style.transition = 'opacity 0.3s ease';
-                nextLayer.style.opacity = 1;
-                prevLayer.style.transition = 'opacity 0.3s ease';
-                prevLayer.style.opacity = 0;
-                activeLayer = activeLayer === 'a' ? 'b' : 'a';
+            function doSwitch() {
+                // 다음 레이어에 이미지 세팅 (transition 없이 opacity 0으로)
+                nextLayer.style.transition = 'none';
+                nextLayer.style.opacity = 0;
+                nextLayer.src = targetSrc;
 
-                setTimeout(() => { isSwitching = false; }, 300);
-            };
+                // 한 프레임 뒤에 transition 켜고 크로스페이드
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        nextLayer.style.transition = 'opacity 0.4s ease';
+                        nextLayer.style.opacity = 1;
+                        prevLayer.style.transition = 'opacity 0.4s ease';
+                        prevLayer.style.opacity = 0;
+                        activeLayer = activeLayer === 'a' ? 'b' : 'a';
+                        setTimeout(() => { isSwitching = false; }, 400);
+                    });
+                });
+            }
 
-            // 이미 캐시된 이미지라면 onload가 안 뜨는 경우 대비
-            if (nextLayer.complete) {
-                nextLayer.onload();
+            // 캐시된 이미지가 완전히 로드됐으면 바로, 아니면 onload 후 실행
+            if (cached && cached.complete && cached.naturalWidth > 0) {
+                doSwitch();
+            } else if (cached) {
+                cached.onload = doSwitch;
+            } else {
+                doSwitch();
             }
         }
 
         window.onload = function() {
+            // 모든 버튼용 이미지 미리 로드
+            preloadAll();
+
             const layerA = document.getElementById('main-image-a');
             const layerB = document.getElementById('main-image-b');
             const imgElement4 = document.getElementById('image4');
@@ -207,7 +229,7 @@
                             imgElement5.style.transition = 'none';
                             imgElement5.style.opacity = 0;
                             setTimeout(() => {
-                                layerA.style.transition = 'opacity 0.3s ease';
+                                layerA.style.transition = 'opacity 0.4s ease';
                             }, 50);
                         }, 520);
                     }, { once: true });
@@ -218,7 +240,7 @@
                         transitionVideo.style.opacity = 0;
                         layerA.style.opacity = 1;
                         setTimeout(() => {
-                            layerA.style.transition = 'opacity 0.3s ease';
+                            layerA.style.transition = 'opacity 0.4s ease';
                         }, 50);
                     });
                 }, 2000);
