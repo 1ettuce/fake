@@ -116,6 +116,7 @@
     </style>
     <script>
         let currentImage = 0;
+        // 버튼용 이미지 배열 (인트로 image4, image5와 분리)
         const images = ['image.png', 'imageA.png', 'imageB.png', 'imageC.png', 'imageD.png'];
 
         document.addEventListener('touchmove', function(event) {
@@ -152,8 +153,9 @@
             const imgElement5 = document.getElementById('image5');
             const transitionVideo = document.getElementById('transition-video');
 
-            imgElement4.src = images[3];
-            imgElement5.src = images[4];
+            // 인트로 애니메이션용 image4, image5는 그대로 유지
+            imgElement4.src = 'image4.png';
+            imgElement5.src = 'image5.png';
             mainImage.src = images[0];
 
             mainImage.style.transition = 'none';
@@ -174,7 +176,7 @@
 
                     transitionVideo.addEventListener('playing', () => {
                         setTimeout(() => {
-                            mainImage.style.transition = 'opacity 0.1s ease';
+                            mainImage.style.transition = 'none';
                             mainImage.style.opacity = 1;
                             imgElement5.style.transition = 'none';
                             imgElement5.style.opacity = 0;
