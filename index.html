@@ -126,13 +126,24 @@
 
         function changeImage(arg) {
             const mainImage = document.getElementById('main-image');
+            const backImage = document.getElementById('back-image');
             currentImage = arg;
+
+            // 새 이미지를 아래 레이어에 먼저 배치
+            backImage.src = images[currentImage];
+            backImage.style.opacity = 1;
+
+            // 위 레이어(현재 이미지)를 페이드아웃 → 크로스페이드
             mainImage.style.transition = 'opacity 0.1s ease';
             mainImage.style.opacity = 0;
+
             setTimeout(() => {
+                // 위 레이어를 새 이미지로 교체 후 즉시 표시
                 mainImage.src = images[currentImage];
+                mainImage.style.transition = 'none';
                 mainImage.style.opacity = 1;
-            }, 100);
+                backImage.style.opacity = 0;
+            }, 110);
         }
 
         window.onload = function() {
@@ -198,7 +209,8 @@
             <source src="transition.webm" type="video/webm">
         </video>
 
-        <img id="main-image" src="image.png" alt="Main Image">
+        <img id="back-image" class="fade" alt="Back Image" style="z-index: 2;">
+        <img id="main-image" src="image.png" alt="Main Image" style="z-index: 3;">
     </div>
     <div class="change-image-button" onclick="changeImage(1)">⬅️</div>
     <div class="change-image-button" style="left: 5px;" onclick="changeImage(0)">➡️</div>
