@@ -43,6 +43,11 @@
             transition: opacity 0.6s ease;
         }
 
+        /* 영상만 top 기준 정렬 (1180x500, 애니메이션이 윗부분에만 있으므로) */
+        video {
+            object-position: top;
+        }
+
         .fade {
             position: absolute;
             top: 0;
@@ -184,8 +189,3 @@
     <div class="change-image-button" style="left: 5px;" onclick="changeImage(0)">➡️</div>
 </body>
 </html>
-
-
-
-
-
