@@ -117,7 +117,8 @@
             imgElement5.src = images[4];
             mainImage.src = images[0];
 
-            // 처음엔 main-image 숨기기
+            // 처음엔 main-image 완전히 숨기기 (transition 없이)
+            mainImage.style.transition = 'none';
             mainImage.style.opacity = 0;
 
             // Step 1: image4 페이드인
@@ -129,7 +130,8 @@
                 imgElement5.style.opacity = 1;
 
                 setTimeout(() => {
-                    // Step 3: image5 → main-image(image0) 전환
+                    // Step 3: image5 사라지고 main-image(image0) 즉시 전환 (페이드 없이)
+                    imgElement5.style.transition = 'none';
                     imgElement5.style.opacity = 0;
                     mainImage.style.opacity = 1;
                 }, 2000);
