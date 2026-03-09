@@ -129,21 +129,29 @@
             const backImage = document.getElementById('back-image');
             currentImage = arg;
 
-            // 새 이미지를 아래 레이어에 먼저 배치
-            backImage.src = images[currentImage];
-            backImage.style.opacity = 1;
+            const newSrc = images[currentImage];
 
-            // 위 레이어(현재 이미지)를 페이드아웃 → 크로스페이드
-            mainImage.style.transition = 'opacity 0.1s ease';
-            mainImage.style.opacity = 0;
+            // 새 이미지를 back에 세팅, 로드 완료 후 크로스페이드
+            backImage.style.transition = 'none';
+            backImage.style.opacity = 0;
+            backImage.src = newSrc;
 
-            setTimeout(() => {
-                // 위 레이어를 새 이미지로 교체 후 즉시 표시
-                mainImage.src = images[currentImage];
-                mainImage.style.transition = 'none';
-                mainImage.style.opacity = 1;
-                backImage.style.opacity = 0;
-            }, 110);
+            backImage.onload = () => {
+                // 두 레이어 동시에 전환 (크로스페이드)
+                backImage.style.transition = 'opacity 0.15s ease';
+                mainImage.style.transition = 'opacity 0.15s ease';
+                backImage.style.opacity = 1;
+                mainImage.style.opacity = 0;
+
+                setTimeout(() => {
+                    // main을 새 이미지로 교체 후 즉시 복원, back 숨김
+                    mainImage.style.transition = 'none';
+                    mainImage.src = newSrc;
+                    mainImage.style.opacity = 1;
+                    backImage.style.transition = 'none';
+                    backImage.style.opacity = 0;
+                }, 160);
+            };
         }
 
         window.onload = function() {
