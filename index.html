@@ -50,7 +50,6 @@
             opacity: 0;
         }
 
-        /* 영상은 transition 없이 즉시 전환되도록 */
         #transition-video {
             position: absolute;
             top: 0;
@@ -121,48 +120,70 @@
             const imgElement5 = document.getElementById('image5');
             const transitionVideo = document.getElementById('transition-video');
 
-            // 이미지 src 설정
             imgElement4.src = images[3];
             imgElement5.src = images[4];
             mainImage.src = images[0];
 
-            // 처음엔 main-image 완전히 숨기기 (transition 없이)
             mainImage.style.transition = 'none';
             mainImage.style.opacity = 0;
 
-            // 영상 종료 시 → main-image(image0) 즉시 표시
+            // 영상 종료 시 main-image 표시
             transitionVideo.addEventListener('ended', () => {
                 transitionVideo.style.opacity = 0;
                 mainImage.style.opacity = 1;
             });
 
+            // ── 핵심: 타임아웃 대신 두 조건이 모두 충족될 때 재생 ──
+            // 1) 영상 버퍼링 완료  2) image5 표시 완료
+            // 둘 다 충족되는 순간 즉시 재생 → 숫자 조정 불필요
+            let videoReady = false;
+            let image5Shown = false;
+
+            function playTransition() {
+                if (!videoReady || !image5Shown) return;
+
+                transitionVideo.style.opacity = 1;
+
+                // 첫 프레임 렌더링 시점에 image5 제거 → 깜빡임 방지
+                transitionVideo.addEventListener('playing', () => {
+                    imgElement5.style.transition = 'none';
+                    imgElement5.style.opacity = 0;
+                }, { once: true });
+
+                transitionVideo.play().catch(() => {
+                    // fallback: 영상 실패 시 바로 image0 표시
+                    imgElement5.style.transition = 'none';
+                    imgElement5.style.opacity = 0;
+                    transitionVideo.style.opacity = 0;
+                    mainImage.style.opacity = 1;
+                });
+            }
+
+            // 영상 버퍼링 완료 이벤트
+            transitionVideo.addEventListener('canplaythrough', () => {
+                videoReady = true;
+                playTransition();
+            }, { once: true });
+
+            // 이미 캐시된 경우 즉시 처리
+            if (transitionVideo.readyState >= 3) {
+                videoReady = true;
+            }
+            // ────────────────────────────────────────────────────────
+
             // Step 1: image4 페이드인
             imgElement4.style.opacity = 1;
 
             setTimeout(() => {
-                // Step 2: image4 → image5 전환
+                // Step 2: image4 → image5
                 imgElement4.style.opacity = 0;
                 imgElement5.style.opacity = 1;
 
                 setTimeout(() => {
-                    // Step 3: 영상을 image5 뒤에 미리 올려두고
-                    // 실제 재생이 시작된 순간 image5를 숨김 → 깜빡임 방지
-                    transitionVideo.style.opacity = 1;
-
-                    // 영상이 실제로 첫 프레임을 그리기 시작할 때 image5 제거
-                    transitionVideo.addEventListener('playing', () => {
-                        imgElement5.style.transition = 'none';
-                        imgElement5.style.opacity = 0;
-                    }, { once: true });
-
-                    transitionVideo.play().catch(() => {
-                        // 영상 재생 실패 시 바로 image5 숨기고 main-image 표시 (fallback)
-                        imgElement5.style.transition = 'none';
-                        imgElement5.style.opacity = 0;
-                        transitionVideo.style.opacity = 0;
-                        mainImage.style.opacity = 1;
-                    });
-                }, 500);
+                    // Step 3: image5 표시 완료 → 영상 준비되면 즉시 재생
+                    image5Shown = true;
+                    playTransition();
+                }, 100);
             }, 1000);
         };
     </script>
@@ -184,4 +205,3 @@
     <div class="change-image-button" style="left: 5px;" onclick="changeImage(0)">➡️</div>
 </body>
 </html>
-
