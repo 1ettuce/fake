@@ -145,13 +145,20 @@
                 imgElement5.style.opacity = 1;
 
                 setTimeout(() => {
-                    // Step 3: image5 사라지고 영상 즉시 재생
-                    imgElement5.style.transition = 'none';
-                    imgElement5.style.opacity = 0;
-
+                    // Step 3: 영상을 image5 뒤에 미리 올려두고
+                    // 실제 재생이 시작된 순간 image5를 숨김 → 깜빡임 방지
                     transitionVideo.style.opacity = 1;
+
+                    // 영상이 실제로 첫 프레임을 그리기 시작할 때 image5 제거
+                    transitionVideo.addEventListener('playing', () => {
+                        imgElement5.style.transition = 'none';
+                        imgElement5.style.opacity = 0;
+                    }, { once: true });
+
                     transitionVideo.play().catch(() => {
-                        // 영상 재생 실패 시 바로 main-image 표시 (fallback)
+                        // 영상 재생 실패 시 바로 image5 숨기고 main-image 표시 (fallback)
+                        imgElement5.style.transition = 'none';
+                        imgElement5.style.opacity = 0;
                         transitionVideo.style.opacity = 0;
                         mainImage.style.opacity = 1;
                     });
