@@ -69,7 +69,6 @@
             z-index: 5;
         }
 
-        /* 크로스페이드용 두 레이어 */
         #main-image-a,
         #main-image-b {
             position: absolute;
@@ -118,7 +117,8 @@
     </style>
     <script>
         let currentImage = 0;
-        let activeLayer = 'a'; // 현재 보이는 레이어
+        let activeLayer = 'a';
+        let isSwitching = false;
         const images = ['image.png', 'imageA.png', 'imageB.png', 'imageC.png', 'imageD.png'];
 
         document.addEventListener('touchmove', function(event) {
@@ -139,24 +139,35 @@
         }, false);
 
         function changeImage(arg) {
-            if (currentImage === arg) return;
+            if (currentImage === arg || isSwitching) return;
+            isSwitching = true;
             currentImage = arg;
 
             const layerA = document.getElementById('main-image-a');
             const layerB = document.getElementById('main-image-b');
 
-            if (activeLayer === 'a') {
-                // B에 새 이미지 로드 후 페이드인, A 페이드아웃
-                layerB.src = images[currentImage];
-                layerB.style.opacity = 1;
-                layerA.style.opacity = 0;
-                activeLayer = 'b';
-            } else {
-                // A에 새 이미지 로드 후 페이드인, B 페이드아웃
-                layerA.src = images[currentImage];
-                layerA.style.opacity = 1;
-                layerB.style.opacity = 0;
-                activeLayer = 'a';
+            const nextLayer = activeLayer === 'a' ? layerB : layerA;
+            const prevLayer = activeLayer === 'a' ? layerA : layerB;
+
+            // 새 이미지를 숨긴 상태로 먼저 로드
+            nextLayer.style.transition = 'none';
+            nextLayer.style.opacity = 0;
+            nextLayer.src = images[currentImage];
+
+            nextLayer.onload = function() {
+                // 완전히 로드된 후에만 크로스페이드 시작
+                nextLayer.style.transition = 'opacity 0.3s ease';
+                nextLayer.style.opacity = 1;
+                prevLayer.style.transition = 'opacity 0.3s ease';
+                prevLayer.style.opacity = 0;
+                activeLayer = activeLayer === 'a' ? 'b' : 'a';
+
+                setTimeout(() => { isSwitching = false; }, 300);
+            };
+
+            // 이미 캐시된 이미지라면 onload가 안 뜨는 경우 대비
+            if (nextLayer.complete) {
+                nextLayer.onload();
             }
         }
 
@@ -170,7 +181,6 @@
             imgElement4.src = 'image4.png';
             imgElement5.src = 'image5.png';
 
-            // 초기 이미지 A레이어에 세팅, 둘 다 숨김 상태로 시작
             layerA.src = images[0];
             layerA.style.transition = 'none';
             layerA.style.opacity = 0;
@@ -196,8 +206,6 @@
                             layerA.style.opacity = 1;
                             imgElement5.style.transition = 'none';
                             imgElement5.style.opacity = 0;
-
-                            // 인트로 끝난 후 버튼 전환에 transition 복원
                             setTimeout(() => {
                                 layerA.style.transition = 'opacity 0.3s ease';
                             }, 50);
@@ -228,7 +236,6 @@
             <source src="transition.webm" type="video/webm">
         </video>
 
-        <!-- 크로스페이드용 두 레이어 (B가 위, A가 아래) -->
         <img id="main-image-a" src="image.png" alt="Main Image A">
         <img id="main-image-b" src="" alt="Main Image B" style="opacity:0;">
     </div>
