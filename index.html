@@ -43,7 +43,6 @@
             transition: opacity 0.6s ease;
         }
 
-        /* 영상만 top 기준 정렬 (1180x500, 애니메이션이 윗부분에만 있으므로) */
         video {
             object-fit: contain;
             object-position: top;
@@ -55,9 +54,9 @@
             top: 0;
             left: 0;
             opacity: 0;
+            z-index: 1;
         }
 
-        /* 영상은 transition 없이 즉시 전환되도록 */
         #transition-video {
             position: absolute;
             top: 0;
@@ -65,8 +64,16 @@
             opacity: 0;
             transition: none;
             width: 100vw;
-            height: auto;   
-            object-fit: fill; 
+            height: auto;
+            object-fit: fill;
+            z-index: 5;
+        }
+
+        #main-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
         }
 
         body {
@@ -100,17 +107,14 @@
         let currentImage = 0;
         const images = ['image.png', 'image2.png', 'image3.png', 'image4.png', 'image5.png'];
 
-        // 스크롤 방지
         document.addEventListener('touchmove', function(event) {
             event.preventDefault();
         }, { passive: false });
 
-        // 컨텍스트 메뉴 방지
         document.addEventListener('contextmenu', function(event) {
             event.preventDefault();
         });
 
-        // 더블탭 줌 방지
         let lastTouchEnd = 0;
         document.addEventListener('touchend', function(event) {
             const now = new Date().getTime();
@@ -131,19 +135,16 @@
             const imgElement5 = document.getElementById('image5');
             const transitionVideo = document.getElementById('transition-video');
 
-            // 이미지 src 설정
             imgElement4.src = images[3];
             imgElement5.src = images[4];
             mainImage.src = images[0];
 
-            // 처음엔 main-image 완전히 숨기기 (transition 없이)
             mainImage.style.transition = 'none';
             mainImage.style.opacity = 0;
 
-            // 영상 종료 시 → main-image(image0) 즉시 표시
+            // 영상 종료 시 영상만 숨김 (main-image는 이미 0.3초 뒤에 표시됨)
             transitionVideo.addEventListener('ended', () => {
                 transitionVideo.style.opacity = 0;
-                mainImage.style.opacity = 1;
             });
 
             // Step 1: image4 페이드인
@@ -155,18 +156,22 @@
                 imgElement5.style.opacity = 1;
 
                 setTimeout(() => {
-                    // Step 3: 영상을 image5 뒤에 미리 올려두고
-                    // 실제 재생이 시작된 순간 image5를 숨김 → 깜빡임 방지
+                    // Step 3: 영상 올리고 재생
                     transitionVideo.style.opacity = 1;
 
-                    // 영상이 실제로 첫 프레임을 그리기 시작할 때 image5 제거
                     transitionVideo.addEventListener('playing', () => {
-                        imgElement5.style.transition = 'none';
-                        imgElement5.style.opacity = 0;
+                        // image5는 그대로 유지 (영상 뒤 빈 공간에서 보임)
+                        // 0.3초 후 main-image로 교체 (영상 뒤에서 자연스럽게)
+                        setTimeout(() => {
+                            mainImage.style.transition = 'none';
+                            mainImage.style.opacity = 1;
+                            imgElement5.style.transition = 'none';
+                            imgElement5.style.opacity = 0;
+                        }, 300);
                     }, { once: true });
 
                     transitionVideo.play().catch(() => {
-                        // 영상 재생 실패 시 바로 image5 숨기고 main-image 표시 (fallback)
+                        // 재생 실패 fallback
                         imgElement5.style.transition = 'none';
                         imgElement5.style.opacity = 0;
                         transitionVideo.style.opacity = 0;
@@ -182,7 +187,6 @@
         <img id="image4" class="fade" alt="Image 4">
         <img id="image5" class="fade" alt="Image 5">
 
-        <!-- 전환 영상: image5 마지막 프레임 → image0 첫 프레임 -->
         <video id="transition-video" muted playsinline preload="auto">
             <source src="transition.mp4" type="video/mp4">
             <source src="transition.webm" type="video/webm">
@@ -194,6 +198,3 @@
     <div class="change-image-button" style="left: 5px;" onclick="changeImage(0)">➡️</div>
 </body>
 </html>
-
-
-
