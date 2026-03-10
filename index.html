@@ -178,7 +178,8 @@
                 transitionVideo.style.opacity = 0;
             });
 
-            // Step 1: image4 페이드인
+            // Step 1: image4 즉시 표시 (페이드 없이)
+            imgElement4.style.transition = 'none';
             imgElement4.style.opacity = 1;
 
             setTimeout(() => {
