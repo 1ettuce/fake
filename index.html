@@ -183,7 +183,9 @@
             imgElement4.style.opacity = 1;
 
             setTimeout(() => {
-                // Step 2: image4 → image5 전환
+                // Step 2: image4 → image5 전환 (transition 복원 후 페이드)
+                imgElement4.style.transition = '';
+                imgElement5.style.transition = '';
                 imgElement4.style.opacity = 0;
                 imgElement5.style.opacity = 1;
 
